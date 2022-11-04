@@ -10,22 +10,22 @@ String todoToJson(TodoDTO data) => json.encode(data.toJson());
 
 class TodoDTO {
   String? id;
-  final String todoText, description;
+  final String title, description;
   final Timestamp createdAt;
   TodoDTO(
-      {required this.todoText,
+      {required this.title,
       required this.description,
       required this.createdAt,
       this.id});
 
   factory TodoDTO.fromJson(Map<String, dynamic> json) => TodoDTO(
-        todoText: json[AppString.todoText],
+        title: json[AppString.title],
         description: json[AppString.description],
         createdAt: json[AppString.createdAt],
       );
 
   Map<String, dynamic> toJson() => {
-        AppString.todoText: todoText,
+        AppString.title: title,
         AppString.description: description,
         AppString.createdAt: createdAt,
       };

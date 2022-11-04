@@ -22,7 +22,7 @@ class TodoBloc extends Cubit<TodoState> {
   }
 
   Future<void> addTodo(TodoDTO todo) async {
-    if (todo.todoText.isEmpty) return;
+    if (todo.title.isEmpty) return;
     emit(TodoLoading());
     await _todoRepository.addTodo(todo);
     final results = await _todoRepository.getAllTodos();
@@ -31,7 +31,7 @@ class TodoBloc extends Cubit<TodoState> {
   }
 
   Future<void> updateTodo(TodoDTO todo) async {
-    if (todo.todoText.isEmpty) return;
+    if (todo.title.isEmpty) return;
     emit(TodoLoading());
     await _todoRepository.updateTodo(todo);
     final results = await _todoRepository.getAllTodos();

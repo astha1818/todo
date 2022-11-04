@@ -32,13 +32,13 @@ class _TodoListState extends State<TodoList> {
   _addUpdateTodo(String type, [id]) {
     type == AppString.addType
         ? context.read<TodoBloc>().addTodo(TodoDTO(
-            todoText: _titleController.text.trim(),
+            title: _titleController.text.trim(),
             description: _descriptionController.text.trim(),
             createdAt: Timestamp.now()))
         : context.read<TodoBloc>().updateTodo(
               TodoDTO(
                 id: id,
-                todoText: _titleController.text.trim(),
+                title: _titleController.text.trim(),
                 description: _descriptionController.text.trim(),
                 createdAt: Timestamp.now(),
               ),
@@ -122,7 +122,7 @@ class _TodoListState extends State<TodoList> {
     return GestureDetector(
       onTap: () {
         _buildDialog(AppString.editType, todoList.id);
-        _titleController.text = todoList.todoText;
+        _titleController.text = todoList.title;
         _descriptionController.text = todoList.description;
       },
       child: Container(
@@ -141,7 +141,7 @@ class _TodoListState extends State<TodoList> {
             shrinkWrap: true,
             children: [
               Text(
-                todoList.todoText,
+                todoList.title,
                 style: const TextStyle(
                   fontSize: AppDimen.size16,
                   fontWeight: FontWeight.w500,

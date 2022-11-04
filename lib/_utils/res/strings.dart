@@ -9,11 +9,10 @@ class AppString {
   static const String editTodo = 'Edit Todo';
   static const String add = 'Add';
   static const String update = 'Update';
-  static const String title = 'Title';
+  static const String title = 'title';
   static const String enterTitle = 'Enter title';
   static const String description = 'description';
   static const String enterDescription = 'Enter description';
-  static const String todoText = 'todoText';
   static const String createdAt = 'createdAt';
   static const String collectionName = 'MyTodos';
 }
