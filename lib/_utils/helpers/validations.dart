@@ -1,4 +1,4 @@
-import 'package:todo/_utils/res/strings.dart';
+import '../res/strings.dart';
 
 class Validation {
   static String? titleValidation(String? text) {
