@@ -10,14 +10,26 @@ import '../../../_utils/helpers/validations.dart';
 import '../controller/todo_bloc.dart';
 import '../model/todo_dto.dart';
 
-class TodoList extends StatefulWidget {
-  const TodoList({super.key});
+class TodoList extends StatelessWidget {
+  const TodoList({Key? key}) : super(key: key);
 
   @override
-  State<TodoList> createState() => _TodoListState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => TodoBloc()..add(GetAllTodos()),
+      child: const TodoListUI(),
+    );
+  }
 }
 
-class _TodoListState extends State<TodoList> {
+class TodoListUI extends StatefulWidget {
+  const TodoListUI({super.key});
+
+  @override
+  State<TodoListUI> createState() => _TodoListState();
+}
+
+class _TodoListState extends State<TodoListUI> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -30,19 +42,19 @@ class _TodoListState extends State<TodoList> {
   }
 
   _addUpdateTodo(String type, [id]) {
-    type == AppString.addType
-        ? context.read<TodoBloc>().addTodo(TodoDTO(
+    id == null
+        ? context.read<TodoBloc>().add(AddTodos(TodoDTO(
             title: _titleController.text.trim(),
             description: _descriptionController.text.trim(),
-            createdAt: Timestamp.now()))
-        : context.read<TodoBloc>().updateTodo(
+            createdAt: Timestamp.now())))
+        : context.read<TodoBloc>().add(UpdateTodos(
               TodoDTO(
                 id: id,
                 title: _titleController.text.trim(),
                 description: _descriptionController.text.trim(),
                 createdAt: Timestamp.now(),
               ),
-            );
+            ));
     _titleController.text = '';
     _descriptionController.text = '';
     Navigator.pop(context, true);
@@ -64,7 +76,7 @@ class _TodoListState extends State<TodoList> {
         padding: const EdgeInsets.all(AppDimen.size20),
         child: BlocBuilder<TodoBloc, TodoState>(
           builder: (context, state) {
-            if (state is TodoLoading) {
+            if (state.isLoading) {
               return const Center(
                 child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(
@@ -72,20 +84,13 @@ class _TodoListState extends State<TodoList> {
                   ),
                 ),
               );
-            } else if (state is TodoInitial) {
-              return const Center(child: Text(AppString.noRecordFound));
-            } else if (state is TodoSuccess) {
-              var todoList = state.todos;
-              if (todoList!.isEmpty) {
+            } else {
+              var todo = state.todoList;
+              if (todo.isEmpty) {
                 return const Center(child: Text(AppString.noRecordFound));
               } else {
-                return _buildListView(todoList);
+                return _buildListView(todo);
               }
-            } else {
-              return Center(
-                child: Text(
-                    (state as TodoError).error ?? AppString.somethingWentWrong),
-              );
             }
           },
         ),
@@ -110,7 +115,7 @@ class _TodoListState extends State<TodoList> {
           key: Key(index.toString()),
           child: _buildListViewBuilder(todoList[index]),
           onDismissed: (direction) {
-            context.read<TodoBloc>().removeTodo(todoList[index]);
+            context.read<TodoBloc>().add(DeleteTodos(todoList[index]));
           },
         );
       },

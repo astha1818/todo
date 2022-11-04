@@ -1,21 +1,26 @@
 part of 'todo_bloc.dart';
 
 class TodoState {
-  final List<TodoDTO> getAllTodos;
+  final List<TodoDTO> todoList;
+  final bool isLoading;
+
   TodoState({
-    this.getAllTodos = const [],
+    this.todoList = const [],
+    this.isLoading = false,
   });
 
   TodoState copyWith({
-    List<TodoDTO>? getAllTodos,
+    List<TodoDTO>? todoList,
+    bool? isLoading,
   }) {
     return TodoState(
-      getAllTodos: getAllTodos ?? this.getAllTodos,
+      todoList: todoList ?? this.todoList,
+      isLoading: isLoading ?? this.isLoading,
     );
   }
 
   @override
   String toString() {
-    return 'TodoState(getAllTodos: $getAllTodos,)';
+    return 'TodoState(todoList: $todoList, isLoading: $isLoading,)';
   }
 }

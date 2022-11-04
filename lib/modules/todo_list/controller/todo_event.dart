@@ -1,23 +1,28 @@
 part of 'todo_bloc.dart';
 
 abstract class TodoEvent {
-  TodoEvent();
+  const TodoEvent();
 }
 
-class TodoInitial extends TodoState {
-  TodoInitial();
+class GetAllTodos extends TodoEvent {}
+
+class AddTodos extends TodoEvent {
+  TodoDTO todo;
+  AddTodos(
+    this.todo,
+  );
 }
 
-class TodoLoading extends TodoState {
-  TodoLoading();
+class UpdateTodos extends TodoEvent {
+  TodoDTO todo;
+  UpdateTodos(
+    this.todo,
+  );
 }
 
-class TodoSuccess extends TodoState {
-  List<TodoDTO>? todos;
-  TodoSuccess({this.todos});
-}
-
-class TodoError extends TodoState {
-  String? error;
-  TodoError({this.error});
+class DeleteTodos extends TodoEvent {
+  TodoDTO todo;
+  DeleteTodos(
+    this.todo,
+  );
 }

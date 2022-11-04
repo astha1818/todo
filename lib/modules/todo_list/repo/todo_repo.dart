@@ -1,19 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dartz/dartz.dart';
+import '../../../_utils/helpers/response.dart';
 import '../../../_utils/res/strings.dart';
 
 import '../model/todo_dto.dart';
 
 abstract class TodoRepository {
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
-  Future<List<TodoDTO>> getAllTodos();
-  Future<void> addTodo(TodoDTO todo);
-  Future<void> updateTodo(TodoDTO todo);
-  Future<void> removeTodo(TodoDTO todo);
+  Future<Response<List<TodoDTO>>> getAllTodos();
+  Future<Response<List<TodoDTO>>> addTodo(TodoDTO todo);
+  Future<Response<List<TodoDTO>>> updateTodo(TodoDTO todo);
+  Future<Response<List<TodoDTO>>> removeTodo(TodoDTO todo);
 }
 
-class TodoRepositotyImpl extends TodoRepository {
+class TodoRepositotyImpl implements TodoRepository {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
   @override
-  Future<List<TodoDTO>> getAllTodos() async {
+  Future<Response<List<TodoDTO>>> getAllTodos() async {
     List<TodoDTO> todos = [];
     final results = await firestore
         .collection(AppString.collectionName)
@@ -24,24 +27,31 @@ class TodoRepositotyImpl extends TodoRepository {
       newTodo.id = snapshot.id;
       todos.add(newTodo);
     }
-    return todos;
+    return right(todos);
   }
 
   @override
-  Future<void> addTodo(TodoDTO todo) async {
-    await firestore.collection(AppString.collectionName).add(todo.toJson());
+  Future<Response<List<TodoDTO>>> addTodo(TodoDTO todo) async {
+    await firestore.collection(AppString.collectionName).add(todo.toMap());
+    getAllTodos();
+    return getAllTodos();
   }
 
   @override
-  Future<void> updateTodo(TodoDTO todo) async {
+  Future<Response<List<TodoDTO>>> updateTodo(TodoDTO todo) async {
     await firestore
         .collection(AppString.collectionName)
         .doc(todo.id)
-        .update(todo.toJson());
+        .update(todo.toMap());
+    getAllTodos();
+    return getAllTodos();
   }
 
   @override
-  Future<void> removeTodo(TodoDTO todo) async {
+  Future<Response<List<TodoDTO>>> removeTodo(TodoDTO todo) async {
     await firestore.collection(AppString.collectionName).doc(todo.id).delete();
+
+    getAllTodos();
+    return getAllTodos();
   }
 }

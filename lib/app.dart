@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '_utils/helpers/routes.dart';
 import '_utils/res/strings.dart';
-import 'modules/todo_list/controller/todo_bloc.dart';
-import 'modules/todo_list/view/todo_list.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -16,13 +14,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      // routes: AppRoutes.getRoutes(),
-      // initialRoute: AppRoutes.todoList,
+      routes: AppRoutes.getRoutes(),
+      initialRoute: AppRoutes.todoList,
       debugShowCheckedModeBanner: false,
-      home: BlocProvider(
-        create: (context) => TodoBloc()..getAllTodo(),
-        child: const TodoList(),
-      ),
     );
   }
 }
