@@ -2,10 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo/_utils/custom_widgets/custom_dialog.dart';
+import 'package:todo/_utils/custom_widgets/custom_show_dialog.dart';
 import '../../../_utils/res/colors.dart';
 import '../../../_utils/res/dimen.dart';
 import '../../../_utils/res/strings.dart';
-
 import '../../../_utils/helpers/validations.dart';
 import '../controller/todo_bloc.dart';
 import '../model/todo_dto.dart';
@@ -34,27 +35,34 @@ class _TodoListState extends State<TodoListUI> {
   final TextEditingController _descriptionController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  _returnErrorText(String type, [id]) {
+  void _returnErrorText(String? id) {
     bool isValidated = _formKey.currentState?.validate() ?? false;
     if (isValidated) {
-      _addUpdateTodo(type, id);
+      _addUpdateTodo(id);
     }
   }
 
-  _addUpdateTodo(String type, [id]) {
+  void _addUpdateTodo(String? id) {
     id == null
-        ? context.read<TodoBloc>().add(AddTodos(TodoDTO(
-            title: _titleController.text.trim(),
-            description: _descriptionController.text.trim(),
-            createdAt: Timestamp.now())))
-        : context.read<TodoBloc>().add(UpdateTodos(
-              TodoDTO(
-                id: id,
-                title: _titleController.text.trim(),
-                description: _descriptionController.text.trim(),
-                createdAt: Timestamp.now(),
+        ? context.read<TodoBloc>().add(
+              AddTodos(
+                TodoDTO(
+                  title: _titleController.text.trim(),
+                  description: _descriptionController.text.trim(),
+                  createdAt: Timestamp.now(),
+                ),
               ),
-            ));
+            )
+        : context.read<TodoBloc>().add(
+              UpdateTodos(
+                TodoDTO(
+                  id: id,
+                  title: _titleController.text.trim(),
+                  description: _descriptionController.text.trim(),
+                  createdAt: Timestamp.now(),
+                ),
+              ),
+            );
     _titleController.text = '';
     _descriptionController.text = '';
     Navigator.pop(context, true);
@@ -85,11 +93,26 @@ class _TodoListState extends State<TodoListUI> {
                 ),
               );
             } else {
-              var todo = state.todoList;
+              List<TodoDTO> todo = state.todoList;
               if (todo.isEmpty) {
                 return const Center(child: Text(AppString.noRecordFound));
               } else {
-                return _buildListView(todo);
+                return ListView.builder(
+                  itemBuilder: (context, index) {
+                    return Dismissible(
+                      key: Key(index.toString()),
+                      child: _buildListViewBuilder(todo[index]),
+                      onDismissed: (direction) {
+                        context.read<TodoBloc>().add(
+                              DeleteTodos(
+                                todo[index],
+                              ),
+                            );
+                      },
+                    );
+                  },
+                  itemCount: todo.length,
+                );
               }
             }
           },
@@ -101,32 +124,17 @@ class _TodoListState extends State<TodoListUI> {
         child: IconButton(
           icon: const Icon(Icons.add),
           onPressed: () {
-            _buildDialog(AppString.addType);
+            _buildDialog(Type.add);
           },
         ),
       ),
     );
   }
 
-  _buildListView(todoList) {
-    return ListView.builder(
-      itemBuilder: (context, index) {
-        return Dismissible(
-          key: Key(index.toString()),
-          child: _buildListViewBuilder(todoList[index]),
-          onDismissed: (direction) {
-            context.read<TodoBloc>().add(DeleteTodos(todoList[index]));
-          },
-        );
-      },
-      itemCount: todoList.length,
-    );
-  }
-
-  _buildListViewBuilder(TodoDTO todoList) {
+  Widget _buildListViewBuilder(TodoDTO todoList) {
     return GestureDetector(
       onTap: () {
-        _buildDialog(AppString.editType, todoList.id);
+        _buildDialog(Type.edit, todoList.id);
         _titleController.text = todoList.title;
         _descriptionController.text = todoList.description;
       },
@@ -171,56 +179,51 @@ class _TodoListState extends State<TodoListUI> {
     );
   }
 
-  _buildDialog(String type, [id]) {
-    showDialog(
+  _buildDialog(Type type, [id]) {
+    CustomShowDialog.showDialogBox(
       context: context,
-      builder: (mContext) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppDimen.size20)),
-          child: Padding(
-            padding: const EdgeInsets.all(AppDimen.size20),
-            child: Form(
-              key: _formKey,
-              child: ListView(
-                shrinkWrap: true,
-                children: [
-                  Text(
-                    type == AppString.addType
-                        ? AppString.addNewTodo
-                        : AppString.editTodo,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: AppDimen.size18,
-                      fontWeight: FontWeight.w600,
-                    ),
+      builder: CustomDialog.showDialogBox(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppDimen.size20)),
+        child: Padding(
+          padding: const EdgeInsets.all(AppDimen.size20),
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                Text(
+                  type == Type.add ? AppString.addNewTodo : AppString.editTodo,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: AppDimen.size18,
+                    fontWeight: FontWeight.w600,
                   ),
-                  const SizedBox(height: AppDimen.size20),
-                  _buildTitle(),
-                  const SizedBox(height: AppDimen.size20),
-                  _buildDescription(),
-                  const SizedBox(height: AppDimen.size20),
-                  ElevatedButton(
-                    onPressed: () {
-                      _returnErrorText(type, id);
-                    },
-                    style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(AppColors.amber),
-                    ),
-                    child:
-                        Text(type == 'add' ? AppString.add : AppString.update),
-                  )
-                ],
-              ),
+                ),
+                const SizedBox(height: AppDimen.size20),
+                _buildTitle(),
+                const SizedBox(height: AppDimen.size20),
+                _buildDescription(),
+                const SizedBox(height: AppDimen.size20),
+                ElevatedButton(
+                  onPressed: () {
+                    _returnErrorText(id);
+                  },
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(AppColors.amber),
+                  ),
+                  child:
+                      Text(type == Type.add ? AppString.add : AppString.update),
+                )
+              ],
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
-  _buildTitle() {
+  Widget _buildTitle() {
     return TextFormField(
       textCapitalization: TextCapitalization.words,
       style: const TextStyle(
@@ -252,7 +255,7 @@ class _TodoListState extends State<TodoListUI> {
     );
   }
 
-  _buildDescription() {
+  Widget _buildDescription() {
     return TextFormField(
       textCapitalization: TextCapitalization.words,
       style: const TextStyle(
@@ -276,7 +279,7 @@ class _TodoListState extends State<TodoListUI> {
       minLines: 1,
       maxLength: 250,
       validator: (value) {
-        return Validation.titleValidation(value);
+        return Validation.descriptionValidation(value);
       },
       inputFormatters: [
         LengthLimitingTextInputFormatter(250),
