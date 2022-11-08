@@ -6,23 +6,23 @@ abstract class TodoEvent {
 
 class GetAllTodos extends TodoEvent {}
 
-class AddTodos extends TodoEvent {
+class AddTodo extends TodoEvent {
   TodoDTO todo;
-  AddTodos(
+  AddTodo(
     this.todo,
   );
 }
 
-class UpdateTodos extends TodoEvent {
+class UpdateTodo extends TodoEvent {
   TodoDTO todo;
-  UpdateTodos(
+  UpdateTodo(
     this.todo,
   );
 }
 
-class DeleteTodos extends TodoEvent {
+class DeleteTodo extends TodoEvent {
   TodoDTO todo;
-  DeleteTodos(
+  DeleteTodo(
     this.todo,
   );
 }

@@ -21,47 +21,53 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
       emit(updatedState);
     });
 
-    on<AddTodos>((event, emit) async {
+    on<AddTodo>((event, emit) async {
       emit(state.copyWith(isLoading: true));
       final result = await TodoRepositotyImpl().addTodo(event.todo);
       final updatedState = result.fold(
         (l) => state.copyWith(
           isLoading: false,
         ),
-        (r) => state.copyWith(
-          isLoading: false,
-          todoList: r,
-        ),
+        (r) {
+          add(GetAllTodos());
+          return state.copyWith(
+            isLoading: false,
+          );
+        },
       );
       emit(updatedState);
     });
 
-    on<UpdateTodos>((event, emit) async {
+    on<UpdateTodo>((event, emit) async {
       emit(state.copyWith(isLoading: true));
       final result = await TodoRepositotyImpl().updateTodo(event.todo);
       final updatedState = result.fold(
         (l) => state.copyWith(
           isLoading: false,
         ),
-        (r) => state.copyWith(
-          isLoading: false,
-          todoList: r,
-        ),
+        (r) {
+          add(GetAllTodos());
+          return state.copyWith(
+            isLoading: false,
+          );
+        },
       );
       emit(updatedState);
     });
 
-    on<DeleteTodos>((event, emit) async {
+    on<DeleteTodo>((event, emit) async {
       emit(state.copyWith(isLoading: true));
       final result = await TodoRepositotyImpl().removeTodo(event.todo);
       final updatedState = result.fold(
         (l) => state.copyWith(
           isLoading: false,
         ),
-        (r) => state.copyWith(
-          isLoading: false,
-          todoList: r,
-        ),
+        (r) {
+          add(GetAllTodos());
+          return state.copyWith(
+            isLoading: false,
+          );
+        },
       );
       emit(updatedState);
     });

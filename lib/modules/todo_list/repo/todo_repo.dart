@@ -7,9 +7,9 @@ import '../model/todo_dto.dart';
 
 abstract class TodoRepository {
   Future<Response<List<TodoDTO>>> getAllTodos();
-  Future<Response<List<TodoDTO>>> addTodo(TodoDTO todo);
-  Future<Response<List<TodoDTO>>> updateTodo(TodoDTO todo);
-  Future<Response<List<TodoDTO>>> removeTodo(TodoDTO todo);
+  Future<Response<Unit>> addTodo(TodoDTO todo);
+  Future<Response<Unit>> updateTodo(TodoDTO todo);
+  Future<Response<Unit>> removeTodo(TodoDTO todo);
 }
 
 class TodoRepositotyImpl implements TodoRepository {
@@ -31,27 +31,23 @@ class TodoRepositotyImpl implements TodoRepository {
   }
 
   @override
-  Future<Response<List<TodoDTO>>> addTodo(TodoDTO todo) async {
+  Future<Response<Unit>> addTodo(TodoDTO todo) async {
     await firestore.collection(AppString.collectionName).add(todo.toMap());
-    getAllTodos();
-    return getAllTodos();
+    return right(unit);
   }
 
   @override
-  Future<Response<List<TodoDTO>>> updateTodo(TodoDTO todo) async {
+  Future<Response<Unit>> updateTodo(TodoDTO todo) async {
     await firestore
         .collection(AppString.collectionName)
         .doc(todo.id)
         .update(todo.toMap());
-    getAllTodos();
-    return getAllTodos();
+    return right(unit);
   }
 
   @override
-  Future<Response<List<TodoDTO>>> removeTodo(TodoDTO todo) async {
+  Future<Response<Unit>> removeTodo(TodoDTO todo) async {
     await firestore.collection(AppString.collectionName).doc(todo.id).delete();
-
-    getAllTodos();
-    return getAllTodos();
+    return right(unit);
   }
 }
