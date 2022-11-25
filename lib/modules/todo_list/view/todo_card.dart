@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import '../../../_utils/res/strings.dart';
-import 'todo_popup.dart';
 
 import '../../../_utils/custom_widgets/custom_dialog.dart';
 import '../../../_utils/custom_widgets/custom_show_dialog.dart';
 import '../../../_utils/res/colors.dart';
 import '../../../_utils/res/dimen.dart';
+import '../../../_utils/res/strings.dart';
 import '../model/todo_dto.dart';
+import 'todo_popup.dart';
 
-class TodoListView extends StatelessWidget {
-  TodoListView(this.mContext, this.todoList, {super.key});
+class TodoCard extends StatelessWidget {
+  TodoCard(this.mContext, this.todoList, {super.key});
   final BuildContext mContext;
   final TodoDTO todoList;
   final TextEditingController _titleController = TextEditingController();

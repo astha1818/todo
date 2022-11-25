@@ -12,7 +12,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
       emit(state.copyWith(isLoading: true));
       final result = await TodoRepositotyImpl().getAllTodos();
       final updatedState = result.fold(
-        (l) => state.copyWith(isLoading: false),
+        (l) => state.copyWith(isLoading: false, responseError: l.toString()),
         (r) => state.copyWith(
           isLoading: false,
           todoList: r,

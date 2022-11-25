@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../_utils/custom_widgets/custom_sizedbox.dart';
-import '../../../_utils/custom_widgets/custom_textformfield.dart';
 import '../../../_utils/helpers/validations.dart';
 import '../../../_utils/res/colors.dart';
 import '../../../_utils/res/dimen.dart';
@@ -79,13 +77,27 @@ class TodoPopup extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            const CustomSizedBox(
+            const SizedBox(
               height: AppDimen.size20,
             ),
-            CustomTextFormField(
+            TextFormField(
+              textCapitalization: TextCapitalization.sentences,
+              style: const TextStyle(
+                fontSize: AppDimen.size14,
+              ),
               controller: titleController,
-              labelText: AppString.title,
-              hintText: AppString.enterTitle,
+              decoration: const InputDecoration(
+                labelText: AppString.title,
+                labelStyle: TextStyle(
+                  fontSize: AppDimen.size16,
+                  color: AppColors.black,
+                ),
+                hintText: AppString.enterTitle,
+                hintStyle: TextStyle(
+                  fontSize: AppDimen.size16,
+                  color: AppColors.black,
+                ),
+              ),
               textInputAction: TextInputAction.next,
               maxLines: 2,
               minLines: 1,
@@ -97,13 +109,28 @@ class TodoPopup extends StatelessWidget {
                 return Validation.titleValidation(value);
               },
             ),
-            const CustomSizedBox(
+            const SizedBox(
               height: AppDimen.size20,
             ),
-            CustomTextFormField(
+            TextFormField(
+              textCapitalization: TextCapitalization.sentences,
+              style: const TextStyle(
+                fontSize: AppDimen.size14,
+              ),
               controller: descriptionController,
-              labelText: AppString.description,
-              hintText: AppString.enterDescription,
+              decoration: const InputDecoration(
+                labelText: AppString.description,
+                labelStyle: TextStyle(
+                  fontSize: AppDimen.size16,
+                  color: AppColors.black,
+                ),
+                hintText: AppString.enterDescription,
+                hintStyle: TextStyle(
+                  fontSize: AppDimen.size16,
+                  color: AppColors.black,
+                ),
+              ),
+              textInputAction: TextInputAction.done,
               maxLines: 5,
               minLines: 1,
               maxLength: 250,
@@ -114,7 +141,7 @@ class TodoPopup extends StatelessWidget {
                 return Validation.descriptionValidation(value);
               },
             ),
-            const CustomSizedBox(
+            const SizedBox(
               height: AppDimen.size20,
             ),
             ElevatedButton(

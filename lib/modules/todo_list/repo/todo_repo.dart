@@ -18,16 +18,23 @@ class TodoRepositotyImpl implements TodoRepository {
   @override
   Future<Response<List<TodoDTO>>> getAllTodos() async {
     List<TodoDTO> todos = [];
-    final results = await firestore
-        .collection(AppString.collectionName)
-        .orderBy(AppString.createdAt)
-        .get();
-    for (var snapshot in results.docs) {
-      TodoDTO newTodo = TodoDTO.fromJson(snapshot.data());
-      newTodo.id = snapshot.id;
-      todos.add(newTodo);
+    try {
+      final results = await firestore
+          .collection(AppString.collectionName)
+          .orderBy(AppString.createdAt)
+          .get();
+      for (var snapshot in results.docs) {
+        TodoDTO newTodo = TodoDTO.fromJson(snapshot.data());
+        newTodo.id = snapshot.id;
+        todos.add(newTodo);
+      }
+      return right(todos);
+    } catch (e) {
+      return left(Failure(
+        code: 500,
+        response: "Something went wrong.",
+      ));
     }
-    return right(todos);
   }
 
   @override

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'todo_listview.dart';
+import 'todo_card.dart';
 import '../../../_utils/custom_widgets/custom_dialog.dart';
 import '../../../_utils/custom_widgets/custom_show_dialog.dart';
 import '../../../_utils/res/colors.dart';
@@ -51,6 +51,8 @@ class TodoListUI extends StatelessWidget {
                   ),
                 ),
               );
+            } else if (state.responseError.isNotEmpty) {
+              return Text(state.responseError);
             } else {
               List<TodoDTO> todo = state.todoList;
               if (todo.isEmpty) {
@@ -61,7 +63,7 @@ class TodoListUI extends StatelessWidget {
                     return Dismissible(
                       key: Key(index.toString()),
                       // child: _buildListViewBuilder(todo[index]),
-                      child: TodoListView(context, todo[index]),
+                      child: TodoCard(context, todo[index]),
                       onDismissed: (direction) {
                         context.read<TodoBloc>().add(
                               DeleteTodo(
